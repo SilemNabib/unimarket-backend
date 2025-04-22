@@ -1,0 +1,45 @@
+name: Build and Deploy to GKE
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+  GKE_CLUSTER: unimarket-directus-cluster
+  GKE_ZONE: us-east1
+  DEPLOYMENT_NAME: unimarket-directus
+  IMAGE: unimarket-backend
+
+jobs:
+  setup-build-publish-deploy:
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Auth to gcloud CLI
+      uses: 'google-github-actions/auth@v2'
+      with:
+        credentials_json: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: Set up gcloud CLI
+      uses: 'google-github-actions/setup-gcloud@v2'
+      with:
+        project_id: ${{ secrets.GKE_PROJECT }}
+
+    - name: Set up GKE credentials
+      uses: 'google-github-actions/get-gke-credentials@v2'
+      with:
+        cluster_name: ${{ env.GKE_CLUSTER }}
+        location: ${{ env.GKE_ZONE }}
+
+    - name: Deploy to GKE
+      run: |-
+        kubectl apply -f k8s/deployment.yaml
