@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: directus
+  labels:
+    app: directus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: directus
+  template:
+    metadata:
+      labels:
+        app: directus
+    spec:
+      containers:
+      - name: directus
+        image: directus/directus:latest
+        ports:
+        - containerPort: 8055
+        envFrom:
+        - secretRef:
+            name: uni-market-secrets
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: directus-service
+spec:
+  selector:
+    app: directus
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8055
+  type: LoadBalancer
