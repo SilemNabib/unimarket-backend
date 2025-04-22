@@ -22,6 +22,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
+      with:
+        repository: SilemNabib/unimarket-backend
+        token: ${{ secrets.SECRET_PAT }}
+/
 
     - name: Auth to gcloud CLI
       uses: 'google-github-actions/auth@v2'
