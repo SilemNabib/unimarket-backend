@@ -22,6 +22,26 @@ spec:
         envFrom:
         - secretRef:
             name: uni-market-secrets
+        volumeMounts:
+        - name: directus-storage
+          mountPath: /data
+      imagePullSecrets:
+        - name: compunet-3-secret
+      volumes:
+      - name: directus-storage
+        persistentVolumeClaim:
+          claimName: directus-pvc
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: directus-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
 ---
 apiVersion: v1
 kind: Service

@@ -1,0 +1,51 @@
+name: Schedule Database Backup
+
+on:
+  schedule:
+    - cron: "0 7 * * *" 
+  workflow_dispatch:
+
+env:
+  DB_HOST: ${{ secrets.DB_HOST }}
+  DB_USER: ${{ secrets.DB_USER }}
+  DB_PASS: ${{ secrets.DB_PASSWORD }}
+  DB_NAME: ${{ secrets.DB_NAME }}
+  DB_PORT: 5432
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up PostgreSQL client
+      run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+    - name: Create backup directory
+      run: mkdir -p ./data/backup/
+
+    - name: Generate backup filename
+      id: generate_filename
+      run: |
+        echo "BACKUP_FILE=./data/backup/backup-$(date +'%d-%m-%Y').sql" >> $GITHUB_ENV
+
+    - name: Backup PostgreSQL database
+      run: |-
+        PGPASSWORD=$DB_PASS pg_dump \
+        -U $DB_USER \
+        -h $DB_HOST \
+        -p $DB_PORT \
+        --data-only \
+        --inserts \
+        $DB_NAME > ${{ env.BACKUP_FILE }}
+
+    - name: Commit and push backup file to repository
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        
+        git add ${{ env.BACKUP_FILE }}
+        git commit -m "Add database backup: ${{ env.BACKUP_FILE }}"
+        git push
