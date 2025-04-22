@@ -1,0 +1,273 @@
+Table EntrepreneurshipType {
+  id int [pk, increment]
+  name varchar
+}
+
+Table SocialNetWork {
+  id int [pk, increment]
+  platform varchar
+  url varchar
+}
+
+Table University {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  acronym varchar2
+  name varchar2
+}
+
+Table Tags {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar2
+}
+
+Table Entrepreneurship {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar
+  slogan text
+  description text
+  creation_date timestamp
+  customization uuid [ref: - EntrepreneurshipCustomization.id ]
+  email varchar
+  phone varchar
+  subscription uuid [ref: > EntrepreneurshipSubscription.id ]
+  status varchar [note: 'Enum: active, inactive']
+  category int [not null, ref: > EntrepreneurshipType.id]
+  social_networks int [unique, not null, ref: < SocialNetWork.id ]
+  user_founder uuid [not null, ref: > User.id ]
+}
+
+Table EntrepreneurshipCustomization {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  profile_img varchar
+  banner_img varchar
+  color1 varchar
+  color2 varchar
+}
+
+Table Partner {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  user uuid [not null, ref: > User.id]
+  entrepreneurship uuid [not null, ref: > Entrepreneurship.id]
+  partner_rol int [not null, ref: > PartnerRol.id ]
+  rating int
+  comment text
+}
+
+Table PartnerRol {
+  id int [pk, increment]
+  name varchar
+}
+
+Table UserStatus {
+  id int [pk, increment]
+  name varchar
+}
+
+Table User {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar
+  lastname varchar
+  email varchar [unique]
+  password varchar
+  profile_picture varchar
+  university uuid [not null, ref: > University.id ]
+  document varchar
+  document_type varchar [note: 'C.C, Etc.']
+  status int [not null, ref: > UserStatus.id ]
+  registration_date timestamp
+  email_verification boolean
+  roles int [ref: > Roles.id ]
+  verification uuid [ref: - Verification.id, unique]
+  user_rating decimal
+  partner_rating decimal
+}
+
+Table Notification {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  user uuid [ref: > User.id ]
+  type int [ref: > NotificationType.id ]
+  title varchar2
+  content varchar2
+}
+
+Table NotificationType {
+  id int [pk]
+  name varchar2
+}
+
+Table Roles {
+  id int [pk, increment]
+  name varchar
+  permissions int [ref: > Permissions.id]
+}
+
+Table Permissions {
+  id int [pk, increment]
+  name varchar
+}
+
+Table EntrepreneurshipSubscription {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  subscription_plan uuid [ref: > SubscriptionPlans.id ]
+  cutoff_date timestamp
+  last_payment timestamp
+}
+
+Table SubscriptionPlans {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar
+  price decimal
+  description text
+  benefits text
+}
+
+Table Verification {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  university uuid [not null, ref: > University.id ]
+  front_document varchar
+  back_document varchar
+  selfie_with_document varchar
+  status varchar [note: 'Pending, Approved, Rejected']
+  verification_date timestamp
+}
+
+Table Product {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  entrepreneurship uuid [ref: > Entrepreneurship.id ]
+  name varchar
+  description text
+  price decimal
+  quantity int
+  stock_alert int
+}
+
+Table ProductVariant {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  product uuid [not null, ref: > Product.id ]
+  nombre varchar
+  stock int
+}
+
+Table ProductImage {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  image_url varchar
+  product_variant uuid [not null, ref: > ProductVariant.id ]
+}
+
+Table ProductSpecification {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  product uuid [ref: > Product.id ]
+  key varchar
+  value varchar
+}
+
+Table Order {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  user uuid [ref: > User.id ]
+  entrepreneurship uuid [ref: > Entrepreneurship.id ]
+  date timestamp
+  status varchar
+  subtotal decimal
+  discount decimal
+  total decimal
+}
+
+Table OrderDetail {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  order uuid [not null, ref: > Order.id]
+  product uuid [not null, ref: > Product.id ]
+  amount int
+  unit_price decimal
+}
+
+Table Payment {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  order uuid [ref: > Order.id ]
+  payment_method uuid [ref: > PaymentMethod.id ]
+  status varchar [note: 'Pending, Confirmed, Rejected']
+  payment_date timestamp
+  created_at timestamp
+}
+
+Table PaymentMethod {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar2
+}
+
+Table PaymentEvidence {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  payment uuid [not null, ref: > Payment.id ]
+  url varchar
+  description text
+  uploaded_at timestamp
+}
+
+Table DeliveryStatus {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar2
+}
+
+Table Delivery {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  type varchar [note: 'Delivery, Pick_Up']
+  delivery_address text
+  order uuid [not null, ref: > Order.id ]
+  partner uuid [ref: > Partner.id ]
+}
+
+Table DeliveryStatusLog {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  delivery uuid [not null, ref: > Delivery.id ]
+  delivery_status uuid [not null, ref: > DeliveryStatus.id ]
+  updated_by uuid [not null, ref: > User.id ]
+  updated_at timestamp
+}
+
+Table Review {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  user uuid [not null, ref: > User.id ]
+  product uuid [not null, ref: > Product.id ]
+  rating int
+  comment text
+  creation_date timestamp
+}
+
+Table Collaboration {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  name varchar
+  description text
+  price decimal
+}
+
+Table CollaborationMembers {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  collaboration uuid [not null, ref: > Collaboration.id ]
+  entrepreneurship uuid [not null, ref: > Entrepreneurship.id ]
+  joined_at timestamp
+}
+
+Table CollaborationImage {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  image_url varchar
+  collaboration uuid [not null, ref: > Collaboration.id ]
+}
+
+Table CollaborationProducts {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  amount int
+  collaboration uuid [not null, ref: > Collaboration.id ]
+  product uuid [not null, ref: > Product.id ]
+}
+
+Table Banner {
+  id uuid [pk, default: 'uuid_generate_v4()']
+  url varchar2
+  created_at varchar2
+}
+
+
+Ref: "Order"."date" < "Delivery"."type"
+
+Ref: "Order"."status" < "Delivery"."id"
+
+Ref entrepreneurship_tags: Entrepreneurship.id <> Tags.id
