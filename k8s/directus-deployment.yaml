@@ -48,10 +48,11 @@ kind: Service
 metadata:
   name: directus-service
 spec:
+  type: LoadBalancer
+  loadBalancerIP: 34.23.100.162
   selector:
     app: directus
   ports:
   - protocol: TCP
     port: 80
     targetPort: 8055
-  type: LoadBalancer
