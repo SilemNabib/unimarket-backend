@@ -50,7 +50,7 @@ metadata:
   name: directus-service
 spec:
   type: LoadBalancer
-  loadBalancerIP: 35.237.238.109
+  loadBalancerIP: 35.231.238.114
   selector:
     app: directus
   ports:
