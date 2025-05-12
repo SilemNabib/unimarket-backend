@@ -7,11 +7,8 @@ on:
     branches: [ "main" ]
 
 env:
-  PROJECT_ID: ${{ secrets.GKE_PROJECT }}
-  GKE_CLUSTER: unimarket-directus-cluster
+  GKE_CLUSTER: unimarket-cluster
   GKE_ZONE: us-east1
-  DEPLOYMENT_NAME: unimarket-directus
-  IMAGE: unimarket-backend
 
 jobs:
   setup-build-publish-deploy:
