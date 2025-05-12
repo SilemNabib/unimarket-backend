@@ -44,12 +44,12 @@ jobs:
         -U $DB_USER \
         -h $DB_HOST \
         -p $DB_PORT \
-        --data-only \
         --inserts \
         $DB_NAME > ${{ env.BACKUP_FILE }}
 
     - name: Commit and push backup file to repository
       run: |
+        git checkout -B db-backups
         git add ${{ env.BACKUP_FILE }}
         git commit -m "Add database backup: ${{ env.BACKUP_FILE }}"
-        git push
+        git push origin db-backups
