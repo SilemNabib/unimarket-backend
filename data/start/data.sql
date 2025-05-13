@@ -190,7 +190,8 @@ INSERT INTO "Product" (
   'Camiseta',
   'Camiseta universitaria',
   20000,
-  10
+  10,
+  5
 );
 
 -- 17) ProductVariant
