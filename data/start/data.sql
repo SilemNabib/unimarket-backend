@@ -183,15 +183,14 @@ VALUES (
 
 -- 16) Product
 INSERT INTO "Product" (
-  "id","entrepreneurship","name","description","price","quantity","stock_alert"
+  "id","entrepreneurship","name","description","price","stock_alert"
 ) VALUES (
   '00000000-0000-0000-0000-00000000000E',
   '00000000-0000-0000-0000-000000000007',
   'Camiseta',
   'Camiseta universitaria',
   20000,
-  10,
-  5
+  10
 );
 
 -- 17) ProductVariant

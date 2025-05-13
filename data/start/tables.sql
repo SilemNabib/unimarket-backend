@@ -123,7 +123,6 @@ CREATE TABLE "Product" (
   "name" varchar,
   "description" text,
   "price" decimal,
-  "quantity" int,
   "stock_alert" int
 );
 
